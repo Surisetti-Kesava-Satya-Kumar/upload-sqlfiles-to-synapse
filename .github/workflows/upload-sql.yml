@@ -28,12 +28,12 @@ jobs:
           AZURE_STORAGE_KEY: "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
           CONTAINER_NAME: satyadlfs
         run: |
-          $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
+          $localFolderPath = "$GITHUB_WORKSPACE/sqlfiles"
 
           $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
 
           Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
-              $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("\")
+              $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("/")
               $blobName = $_.Name
               Set-AzStorageBlobContent -Container $env:CONTAINER_NAME -File $_.FullName -Blob "$blobPath/$blobName" -Context $context
           }
