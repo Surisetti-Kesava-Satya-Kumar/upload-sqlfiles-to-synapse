@@ -1,31 +1,36 @@
 name: Upload SQL Files to Azure Synapse
 
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - main
 
 jobs:
   upload-sql-files:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Azure CLI
-        run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Upload SQL Files to Azure Synapse
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Set up Azure PowerShell
+        uses: azure/setup-azurerm@v1
 
-      - name: Execute PowerShell Script
-        shell: powershell
+      - name: Install Azure PowerShell module
+        run: Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+
+      - name: Upload SQL Files to Azure Synapse
+        env:
+          AZURE_STORAGE_ACCOUNT: satyadldemo
+          AZURE_STORAGE_KEY: "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
+          CONTAINER_NAME: satyadlfs
         run: |
           $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
-          $storageAccountName = "satyadldemo"
-          $storageAccountKey = "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
-          $containerName = "satyadlfs"
 
-          az storage blob upload-batch --destination $containerName --source $localFolderPath --account-name $storageAccountName --account-key $storageAccountKey
+          $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
+
+          Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
+              $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("\")
+              $blobName = $_.Name
+              Set-AzStorageBlobContent -Container $env:CONTAINER_NAME -File $_.FullName -Blob "$blobPath/$blobName" -Context $context
+          }
