@@ -28,7 +28,7 @@ jobs:
           AZURE_STORAGE_KEY: "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
           CONTAINER_NAME: satyadlfs
         run: |
-          $localFolderPath = $env:GITHUB_WORKSPACE + "/sqlfiles"
+          $localFolderPath = "$GITHUB_WORKSPACE/sqlfiles"
 
           $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
 
