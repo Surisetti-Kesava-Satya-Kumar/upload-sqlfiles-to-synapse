@@ -10,9 +10,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-        
-      - name: Set up PowerShell
-        uses: actions/setup-powershell@v2
 
       - name: Upload SQL Files to Azure Synapse
         uses: azure/login@v1
@@ -20,9 +17,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Execute PowerShell Script
-        uses: microsoft/powershell@v1
-        with:
-          pwsh: |
+        run: |
             $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
 
             $storageAccountName = "satyadldemo"
