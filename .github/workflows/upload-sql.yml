@@ -21,11 +21,11 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Execute PowerShell Script
+        shell: powershell
         run: |
-            $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
+          $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
+          $storageAccountName = "satyadldemo"
+          $storageAccountKey = "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
+          $containerName = "satyadlfs"
 
-            $storageAccountName = "satyadldemo"
-            $storageAccountKey = "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
-            $containerName = "satyadlfs"
-            
-            az storage blob upload-batch --destination $containerName --source $localFolderPath --account-name $storageAccountName --account-key $storageAccountKey
+          az storage blob upload-batch --destination $containerName --source $localFolderPath --account-name $storageAccountName --account-key $storageAccountKey
