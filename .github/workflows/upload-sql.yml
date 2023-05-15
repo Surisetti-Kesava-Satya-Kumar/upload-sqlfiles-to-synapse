@@ -27,11 +27,5 @@ jobs:
             $storageAccountName = "satyadldemo"
             $storageAccountKey = "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
             $containerName = "satyadlfs"
-
-            $context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey
-
-            Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
-                $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("\")
-                $blobName = $_.Name
-                Set-AzStorageBlobContent -Container $containerName -File $_.FullName -Blob $blobPath/$blobName -Context $context
-            }
+            
+            az storage blob upload-batch --destination $containerName --source $localFolderPath --account-name $storageAccountName --account-key $storageAccountKey
