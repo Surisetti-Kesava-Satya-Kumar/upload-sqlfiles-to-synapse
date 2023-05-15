@@ -21,13 +21,15 @@ jobs:
 
       - name: Upload SQL Files to Azure Synapse
         env:
-          AZURE_STORAGE_ACCOUNT: satyadldemo
-          AZURE_STORAGE_KEY: "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
+          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+          STORAGE_ACCOUNT_NAME: satyadldemo
           CONTAINER_NAME: satyadlfs
         run: |
           $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
 
-          $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
+          Connect-AzAccount -ServicePrincipal -Credential (New-Object PSCredential -ArgumentList $env:AZURE_CLIENT_ID, (ConvertTo-SecureString -String $env:AZURE_CLIENT_SECRET -AsPlainText -Force)) -Tenant $env:AZURE_TENANT_ID
+
+          $context = Get-AzStorageAccountKey -ResourceGroupName "your_resource_group_name" -AccountName $env:STORAGE_ACCOUNT_NAME | Select-Object -ExpandProperty Context
 
           Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
               $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("\")
