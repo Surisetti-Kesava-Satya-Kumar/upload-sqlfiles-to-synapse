@@ -29,11 +29,11 @@ jobs:
           CONTAINER_NAME: satyadlfs
         run: |
           $localFolderPath = "/sqlfiles"
-
           $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
 
           Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
-              $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("/")
-              $blobName = $_.Name
-              Set-AzStorageBlobContent -Container $env:CONTAINER_NAME -File $_.FullName -Blob "$blobPath/$blobName" -Context $context
+          $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("/")
+          $blobName = $_.Name
+          Set-AzStorageBlobContent -Container $env:CONTAINER_NAME -File $_.FullName -Blob "$blobPath/$blobName" -Context $context
           }
+
