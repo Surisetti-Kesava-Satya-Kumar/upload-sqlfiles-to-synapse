@@ -1,9 +1,7 @@
 name: Upload SQL Files to Azure Synapse
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   upload-sql-files:
