@@ -13,23 +13,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Azure PowerShell
-        uses: azure/setup-azurerm@v1
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Install Azure PowerShell module
-        run: Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+        run: |
+          pwsh -Command "Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser"
 
       - name: Upload SQL Files to Azure Synapse
         env:
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-          STORAGE_ACCOUNT_NAME: satyadldemo
+          AZURE_STORAGE_ACCOUNT: satyadldemo
+          AZURE_STORAGE_KEY: "qfzI4S8ydhvdIGLrNLAAOhD735FpbQCmzuUMCHzId9Te4n9gR+FVyDWBB9o7GZKMl66UyPB5l8Tj+AStzjTewA=="
           CONTAINER_NAME: satyadlfs
         run: |
           $localFolderPath = "C:\Users\Satyakumar_Surisetti\Documents\sqlfiles"
 
-          Connect-AzAccount -ServicePrincipal -Credential (New-Object PSCredential -ArgumentList $env:AZURE_CLIENT_ID, (ConvertTo-SecureString -String $env:AZURE_CLIENT_SECRET -AsPlainText -Force)) -Tenant $env:AZURE_TENANT_ID
-
-          $context = Get-AzStorageAccountKey -ResourceGroupName "your_resource_group_name" -AccountName $env:STORAGE_ACCOUNT_NAME | Select-Object -ExpandProperty Context
+          $context = New-AzStorageContext -StorageAccountName $env:AZURE_STORAGE_ACCOUNT -StorageAccountKey $env:AZURE_STORAGE_KEY
 
           Get-ChildItem -Path $localFolderPath -Recurse | ForEach-Object {
               $blobPath = $_.FullName.Replace($localFolderPath, "").TrimStart("\")
