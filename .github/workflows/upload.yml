@@ -1,0 +1,23 @@
+name: Upload SQL to Azure Synapse
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Upload SQL files to Azure Synapse
+        run: |
+          az storage blob upload-batch --account-name satyadldemo --account-key ${{ secrets.AZURE_STORAGE_KEY }} --destination satyadlfs --source "sqlfiles"
